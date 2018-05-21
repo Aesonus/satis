@@ -1,0 +1,43 @@
+{
+    "name": "Aesonus's Repo Depo",
+    "homepage": "https://electronicscalculators.com",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/Aesonus/session-storage.git"
+        },
+        {
+            "type": "git",
+            "url": "hth@helixteamhub.cloud:corylaughlin/projects/slender-man/repositories/git/service-provider"
+        },
+        {
+            "type": "git",
+            "url": "hth@helixteamhub.cloud:corylaughlin/projects/dart_rpg/repositories/git/dart-rpg-lib"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/Aesonus/php-darts.git"
+        },
+        {
+            "type": "git",
+            "url": "hth@helixteamhub.cloud:corylaughlin/projects/slender-man/repositories/git/slenderman"
+        },
+        {
+            "type": "git",
+            "url": "hth@helixteamhub.cloud:corylaughlin/projects/slender-man/repositories/git/slenderman-app"
+        },
+        { "type": "composer", "url": "https://packagist.org" }
+    ],
+    
+    "require": {
+        "aesonus/session-storage": "*",
+        "slenderman/core": "*",
+        "slenderman/app": "*",
+        "aesonus/php-darts": "*",
+        "aesonus/dart-rpg-lib": "*",
+        "phpunit/phpunit": "5.*"
+    },
+    
+    "require-dependencies": true,
+    "output-dir": "packages-mirror"
+}

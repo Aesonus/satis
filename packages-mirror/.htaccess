@@ -1,0 +1,4 @@
+AuthType Basic
+AuthName "Access to /satis/packages-mirror"
+AuthUserFile /kunden/homepages/2/d706206022/htpasswd
+Require user satis
