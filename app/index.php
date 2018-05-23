@@ -64,7 +64,7 @@ $app->get('/', function ($request, $response, $args) {
 
 $app->get('/update', function ($request, $response, $args) {
     $ssh = $this->ssh;
-    $packages = ['slenderman/service-provider'];
+    $packages = [];
     $build_cmd = sprintf(
         $this->build_template, 
         $this->php_cli, 
