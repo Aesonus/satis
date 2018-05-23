@@ -4,11 +4,11 @@ function getPackagesToUpdate(Psr\Http\Message\ServerRequestInterface $request)
 {
     $payload = $request->getParsedBody();
     $from_host = $payload['repository']['url'];
-    if (stripos($from_host, 'helixteamhub.cloud') !== FALSE) {
+    if (mb_stripos($from_host, 'helixteamhub.cloud') !== FALSE) {
         $vendor = str_replace(" ", "", strtolower($payload['project']['name']));
         $package = $payload['repository']['name'];
         return [$vendor . '/' . $package];
-    } elseif (stripos($from_host, 'github.com') !== FALSE) {
+    } elseif (mb_stripos($from_host, 'github.com') !== FALSE) {
         return [str_replace(" ", "", strtolower($payload['project']['full_name']))];
     } else {
         return [];
