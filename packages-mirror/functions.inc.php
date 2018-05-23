@@ -2,13 +2,16 @@
 
 function getPackagesToUpdate(Psr\Http\Message\ServerRequestInterface $request)
 {
-    if ('35.195.211.84' === $request->getServerParams()['REMOTE_ADDR']) {
-        $payload = $request->getParsedBody();
+    $payload = $request->getParsedBody();
+    $from_host = $payload['repository']['url'];
+    if (stripos($from_host, 'helixteamhub.cloud') !== FALSE) {
         $vendor = str_replace(" ", "", strtolower($payload['project']['name']));
         $package = $payload['repository']['name'];
         return [$vendor . '/' . $package];
-    } elseif ('192.30.252.34' === $request->getServerParams()['REMOTE_ADDR']) {
+    } elseif (stripos($from_host, 'github.com') !== FALSE) {
         return [str_replace(" ", "", strtolower($payload['project']['full_name']))];
+    } else {
+        return [];
     }
 }
 
