@@ -57,7 +57,7 @@ $app->get('/', function ($request, $response, $args) {
 
 $app->get('/update', function ($request, $response, $args) {
     $ssh = $this->ssh;
-    $packages = [];
+    $packages = [''];
     $build_cmd = sprintf(
         $this->build_template, $this->php_cli, $this->satis_bin, $this->satis_conf, $this->web_output, implode(' ', $packages)
     );
