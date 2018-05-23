@@ -58,10 +58,7 @@ $app->get('/', function ($request, $response, $args) {
 $app->get('/update', function ($request, $response, $args) {
     $ssh = $this->ssh;
     $packages = [''];
-    $build_cmd = sprintf(
-        $this->build_template, $this->php_cli, $this->satis_bin, $this->satis_conf, $this->web_output, implode(' ', $packages)
-    );
-    $output = $ssh->exec($build_cmd);
+    $output = cliBuild($this, $packages);
     if ((int) $ssh->getExitStatus() === 0) {
         echo $output;
         return $response;
