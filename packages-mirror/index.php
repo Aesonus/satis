@@ -15,28 +15,7 @@ require ROOT_DIR . '/vendor/autoload.php';
 require 'functions.inc.php';
 
 //CONFIG
-$app = new \Slim\App([
-    'settings' => [
-        //Debug setting. Turn off for production
-        'displayErrorDetails' => MODE !== 'production',
-        //Some middleware relies on knowing what route the app is taking
-        'determineRouteBeforeAppMiddleware' => true,
-        'http_auth' => [
-            "users" => getUserCredentials(),
-            "environment" => "REDIRECT_HTTP_AUTHORIZATION",
-            "path" => "/",
-            "passthough" => "/webhook"
-        ]
-    ],
-    'ssh_host' => 'home706206022.1and1-data.host',
-    'ssh_user' => 'u90967977',
-    'ssh_password' => '5jyv*!VbksMKZ$9C',
-    'php_cli' => '/usr/bin/php5.5-cli',
-    'satis_bin' => ROOT_DIR . '/bin/satis',
-    'satis_conf' => ROOT_DIR . '/satis.json',
-    'web_output' => ROOT_DIR . '/packages-mirror',
-    'build_template' => '%s %s build %s %s %s',
-    ]);
+$app = new \Slim\App(require ROOT_DIR . '/config/config.inc.php');
 
 //Need the container for stuff
 $container = $app->getContainer();
@@ -48,6 +27,20 @@ $container['ssh'] = function (\Psr\Container\ContainerInterface $c) {
         throw new RuntimeException("Failed to log in to ssh host");
     }
     return $ssh;
+};
+
+$container['x_hub'] = function (Psr\Container\ContainerInterface $c) {
+    //Creates a new verification object
+    $x_hub = new \Keruald\GitHub\XHubSignature($c->ssh_password);
+    //Need to remove the algo so the verification object'll work
+    $x_hub->signature = str_replace("sha1=", "", $c->request->getHeader("HTTP_X_HUB_SIGNATURE")[0]);
+    $x_hub->payload = json_encode($c->request->getParsedBody(), JSON_UNESCAPED_SLASHES);
+    return $x_hub;
+};
+
+$container['log_file'] = function (Psr\Container\ContainerInterface $c) {
+    $file = new SplFileObject(ROOT_DIR . "/logs/requestLog.txt", 'a+b');
+    return $file;
 };
 
 //AUTHENTICATION MIDDLEWARE
@@ -66,12 +59,7 @@ $app->get('/update', function ($request, $response, $args) {
     $ssh = $this->ssh;
     $packages = [];
     $build_cmd = sprintf(
-        $this->build_template, 
-        $this->php_cli, 
-        $this->satis_bin, 
-        $this->satis_conf, 
-        $this->web_output, 
-        implode(' ', $packages)
+        $this->build_template, $this->php_cli, $this->satis_bin, $this->satis_conf, $this->web_output, implode(' ', $packages)
     );
     $output = $ssh->exec($build_cmd);
     if ((int) $ssh->getExitStatus() === 0) {
@@ -86,26 +74,42 @@ $app->get('/update', function ($request, $response, $args) {
 $app->post('/webhook', function (\Psr\Http\Message\ServerRequestInterface $request, $response, $args) {
     $ssh = $this->ssh;
     $packages = getPackagesToUpdate($request);
-
-    $handle = fopen('lastpayload.json', 'wb');
-    $submission = $request->getParsedBody();
-    fwrite($handle, json_encode($submission, JSON_JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT));
-    fclose($handle);
-    
-    $build_cmd = sprintf(
-        $this->build_template, 
-        $this->php_cli, 
-        $this->satis_bin, 
-        $this->satis_conf, 
-        $this->web_output, 
-        implode(' ', $packages)
-    );
-    $output = $ssh->exec($build_cmd);
-    if ((int) $ssh->getExitStatus() === 0) {
-        return $response;
-    } else {
-        return $response->withStatus(500);
+    if (MODE !== "production") {
+        $handle = fopen('lastpayload.json', 'wb');
+        $submission = $request->getParsedBody();
+        fwrite($handle, json_encode($submission, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        fclose($handle);
     }
+    //Check the request header
+    $valid = $this->x_hub->validate();
+    //Log what happened
+    $this->log_file->fwrite(
+        vsprintf('Request with signature: "%1$s" from ip: %3$s, %2$s, Packages: %4$s' . "\n", [
+        $this->x_hub->signature,
+        $valid ? "Okay" : "Denied",
+        $request->getServerParams()['REMOTE_ADDR'],
+        implode(", ", $packages),
+    ]));
+    if ($valid) {
+        /*
+          $build_cmd = vsprintf(
+          $this->build_template, [
+          $this->php_cli,
+          $this->satis_bin,
+          $this->satis_conf,
+          $this->web_output,
+          implode(' ', $packages)
+          ]);
+          $output = $ssh->exec($build_cmd);
+         */
+        $output = cliBuild($this, $packages);
+
+        if ((int) $ssh->getExitStatus() === 0) {
+            return $response;
+        }
+    }
+
+    return $response->withStatus(500);
 });
 
 //RUN

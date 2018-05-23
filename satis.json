@@ -19,25 +19,23 @@
             "url": "https://github.com/Aesonus/php-darts.git"
         },
         {
+            "type": "vcs",
+            "url": "https://github.com/Aesonus/github.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/Aesonus/satis.git"
+        },
+        {
             "type": "git",
             "url": "hth@helixteamhub.cloud:corylaughlin/projects/slender-man/repositories/git/slenderman"
         },
         {
             "type": "git",
             "url": "hth@helixteamhub.cloud:corylaughlin/projects/slender-man/repositories/git/slenderman-app"
-        },
-        { "type": "composer", "url": "https://packagist.org" }
+        }
     ],
     
-    "require": {
-        "aesonus/session-storage": "*",
-        "slenderman/core": "*",
-        "slenderman/app": "*",
-        "aesonus/php-darts": "*",
-        "aesonus/dart-rpg-lib": "*",
-        "phpunit/phpunit": "5.*"
-    },
-    
-    "require-dependencies": true,
+    "require-all": true,
     "output-dir": "packages-mirror"
 }

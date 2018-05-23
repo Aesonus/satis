@@ -4,4 +4,7 @@
 /composer.phar
 /phpunit.xml
 /satis.phar
-/config/angrycats
+/config/
+/packages-mirror/lastpayload.json
+/nbproject
+/logs
