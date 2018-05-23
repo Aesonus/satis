@@ -9,7 +9,7 @@ function getPackagesToUpdate(Psr\Http\Message\ServerRequestInterface $request)
         $package = $payload['repository']['name'];
         return [$vendor . '/' . $package];
     } elseif (mb_stripos($from_host, 'github.com') !== FALSE) {
-        return [str_replace(" ", "", strtolower($payload['project']['full_name']))];
+        return [str_replace(" ", "", strtolower($payload['repository']['full_name']))];
     } else {
         return [];
     }
