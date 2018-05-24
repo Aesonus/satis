@@ -91,7 +91,7 @@ $app->post('/webhook', function (\Psr\Http\Message\ServerRequestInterface $reque
         $valid ? "Okay" : "Denied",
         $request->getServerParams()['REMOTE_ADDR'],
         implode(", ", $packages),
-        \Carbon\Carbon::now()->toDateTimeString(),
+        \Carbon\Carbon::now(),
     ]));
 
     if ($valid) {
