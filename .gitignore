@@ -6,5 +6,6 @@
 /satis.phar
 /config/
 /packages-mirror/lastpayload.json
+/packages-mirror/index.html
 /nbproject
 /logs

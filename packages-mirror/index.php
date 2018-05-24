@@ -55,14 +55,19 @@ $app->get('/', function ($request, $response, $args) {
     return $response;
 })->add($container->http_auth);
 
-$app->get('/update', function ($request, $response, $args) {
+$app->get('/update[/{vendor}/{package}]', function ($request, $response, $args) {
     $ssh = $this->ssh;
-    $packages = [''];
+    if (isset($args['vendor'])) {
+        $packages = [$args['vendor'].'/'.$args['package']];
+    } else {
+        $packages = [''];
+    }
     $output = cliBuild($this, $packages);
     if ((int) $ssh->getExitStatus() === 0) {
         echo $output;
         return $response;
     } else {
+        echo $output;
         return $response->withStatus(500);
     }
 })->add($container->http_auth);
