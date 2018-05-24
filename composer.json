@@ -13,6 +13,9 @@
         "name": "Nils Adermann",
         "email": "naderman@naderman.de",
         "homepage": "http://www.naderman.de"
+    }, {
+        "name": "Cory Laughlin",
+        "email": "corylcomposinger@gmail.com"
     }],
     "support": {
         "issues": "https://github.com/composer/satis",
