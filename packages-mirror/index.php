@@ -58,7 +58,7 @@ $app->get('/', function ($request, $response, $args) {
 $app->get('/update[/{vendor}/{package}]', function ($request, $response, $args) {
     $ssh = $this->ssh;
     if (isset($args['vendor'])) {
-        $packages = [$args['vendor'].'/'.$args['package']];
+        $packages = [$args['vendor'] . '/' . $args['package']];
     } else {
         $packages = [''];
     }
@@ -86,30 +86,27 @@ $app->post('/webhook', function (\Psr\Http\Message\ServerRequestInterface $reque
     $valid = $this->x_hub->validate();
     //Log what happened
     $this->log_file->fwrite(
-        vsprintf('Request with signature: "%1$s" from ip: %3$s, %2$s, Packages: %4$s' . "\n", [
+        vsprintf('Request with signature (%5$s): "%1$s" from ip: %3$s, %2$s, Packages: %4$s' . "\n", [
         $this->x_hub->signature,
         $valid ? "Okay" : "Denied",
         $request->getServerParams()['REMOTE_ADDR'],
         implode(", ", $packages),
+        \Carbon\Carbon::now()->toDateTimeString(),
     ]));
-    if ($valid) {
-        /*
-          $build_cmd = vsprintf(
-          $this->build_template, [
-          $this->php_cli,
-          $this->satis_bin,
-          $this->satis_conf,
-          $this->web_output,
-          implode(' ', $packages)
-          ]);
-          $output = $ssh->exec($build_cmd);
-         */
-        $output = cliBuild($this, $packages);
 
+    if ($valid) {
+        $output = cliBuild($this, $packages);
+        //Log the exit code
+        $this->log_file->fwrite(
+            vsprintf('Exit code: %1$s' . "\n", [$ssh->getExitStatus()])
+        );
         if ((int) $ssh->getExitStatus() === 0) {
             return $response;
         }
     }
+    $this->log_file->fwrite(
+        vsprintf('Output: %1$s' . "\n", [$output])
+    );
 
     return $response->withStatus(500);
 });

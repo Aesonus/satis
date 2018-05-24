@@ -28,11 +28,11 @@
         },
         {
             "type": "git",
-            "url": "hth@helixteamhub.cloud:corylaughlin/projects/slender-man/repositories/git/slenderman"
+            "url": "hth@helixteamhub.cloud:corylaughlin/projects/slender-man/repositories/git/core"
         },
         {
             "type": "git",
-            "url": "hth@helixteamhub.cloud:corylaughlin/projects/slender-man/repositories/git/slenderman-app"
+            "url": "hth@helixteamhub.cloud:corylaughlin/projects/slender-man/repositories/git/app"
         }
     ],
     
