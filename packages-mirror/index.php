@@ -98,14 +98,14 @@ $app->post('/webhook', function (\Psr\Http\Message\ServerRequestInterface $reque
         $output = cliBuild($this, $packages);
         //Log the exit code
         $this->log_file->fwrite(
-            vsprintf('Exit code: %1$s' . "\n", [$ssh->getExitStatus()])
+            vsprintf('Exit code: %s' . "\n", [$ssh->getExitStatus()])
         );
         if ((int) $ssh->getExitStatus() === 0) {
             return $response;
         }
     }
     $this->log_file->fwrite(
-        vsprintf('Output: %1$s' . "\n", [$output])
+        vsprintf('Output: %s' . "\n", [$output])
     );
 
     return $response->withStatus(500);
